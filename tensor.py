@@ -1,4 +1,4 @@
-from Vector import DynamicVector
+rom Vector import DynamicVector
 from SIMD import SIMD
 from DType import DType
 from String import String
@@ -24,6 +24,13 @@ struct Tensor:
             new_tensor[i] = self.tensor[i] + other.tensor[i]
         let result = Tensor(new_tensor, self.name)
         return result
+    
+    fn __sub__(self, other: Tensor) -> Tensor:
+        var new_tensor = DynamicVector[SIMD[DType.float32, 2]](self.size)
+        for i in range(self.size):
+            new_tensor[i] = self.tensor[i] - other.tensor[i]
+        let result = Tensor(new_tensor, self.name)
+        return result
 
     fn __mul__(self, other: Tensor) -> Tensor:
         var new_tensor = DynamicVector[SIMD[DType.float32, 2]](self.size)
@@ -31,7 +38,14 @@ struct Tensor:
             new_tensor[i] = self.tensor[i] * other.tensor[i]
         let result = Tensor(new_tensor, self.name)
         return result
-
+    
+    fn dot(self, other: Tensor) -> DynamicVector[Float32]:
+        var r = DynamicVector[Float32](self.size)
+        for i in range(self.size):
+            let summed = self * other
+            print(summed.tensor[i])
+            r.push_back(summed.tensor[i].reduce_add())
+        return r
 
 # a = SIMD[DType.float32, 2](3.0, 2.0)
 # d = SIMD[DType.float32, 2](3.0, 2.0)
